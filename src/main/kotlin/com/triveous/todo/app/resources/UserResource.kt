@@ -21,7 +21,6 @@ class UserResource(@Autowired private  val service: UserService) {
         val lastName = userMap["lastName"] as String
         val email = userMap["email"] as String
         val password = userMap["password"] as String
-        print("HERE Registering User User Resource $firstName :: $lastName :: $email :: $password")
         service.registerUser(firstName = firstName,lastName = lastName,email = email, password = password)
         val map: MutableMap<String, String> = HashMap()
         map.put("message","Registered Successfully")
