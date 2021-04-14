@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
+import javax.servlet.http.HttpServletRequest
 
 @RestController
 @RequestMapping("/api/todo")
@@ -25,7 +26,9 @@ class TodoResource(@Autowired private val service: TodoService) {
     }
 
     @GetMapping("/getTodos")
-    public fun getAllTodos() : Collection<Todo> = service.getAllTodos()
+    public fun getAllTodos(request: HttpServletRequest) : Collection<Todo> {
+        return service.getAllTodos()
+    }
 
     @DeleteMapping("/deleteWithId")
     public fun deleteTodoWithId(id: Int) : Int = service.deleteTodoWithId(id = id)

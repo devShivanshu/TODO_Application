@@ -2,6 +2,9 @@ package com.triveous.todo.app.resources
 
 import com.triveous.todo.app.domain.User
 import com.triveous.todo.app.services.UserService
+import io.jsonwebtoken.Jwts
+import com.triveous.todo.app.Constants
+import io.jsonwebtoken.SignatureAlgorithm
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -9,6 +12,8 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
+import java.util.*
+import kotlin.collections.HashMap
 
 
 @RestController
@@ -21,10 +26,8 @@ class UserResource(@Autowired private  val service: UserService) {
         val lastName = userMap["lastName"] as String
         val email = userMap["email"] as String
         val password = userMap["password"] as String
-        service.registerUser(firstName = firstName,lastName = lastName,email = email, password = password)
-        val map: MutableMap<String, String> = HashMap()
-        map.put("message","Registered Successfully")
-        return  ResponseEntity(map, HttpStatus.OK)
+        val user: User? = service.registerUser(firstName = firstName,lastName = lastName,email = email, password = password)
+        return  ResponseEntity(generateJWTToken(user), HttpStatus.OK)
     }
 
     @PostMapping("/login")
@@ -32,10 +35,22 @@ class UserResource(@Autowired private  val service: UserService) {
         val email = userMap["email"] as String
         val password = userMap["password"] as String?
         val user: User? = service.validateUser(email, password)
-        val map: MutableMap<String, String> = HashMap()
-        map.put("message","LoggedIn Successfully")
-        return  ResponseEntity(map,HttpStatus.OK)
+        return  ResponseEntity(generateJWTToken(user),HttpStatus.OK)
+    }
 
+    private fun generateJWTToken(user: User?): Map<String, String>? {
+        val timestamp = System.currentTimeMillis()
+        val token: String = Jwts.builder().signWith(SignatureAlgorithm.HS256, Constants.API_SECRET_KEY)
+                .setIssuedAt(Date(timestamp))
+                .setExpiration(Date(timestamp + Constants.TOKEN_VALIDITY))
+                .claim("userId", user?.userId)
+                .claim("email", user?.email)
+                .claim("firstName", user?.firstName)
+                .claim("lastName", user?.lastName)
+                .compact()
+        val map: MutableMap<String, String> = HashMap()
+        map["token"] = token
+        return map
     }
 
 

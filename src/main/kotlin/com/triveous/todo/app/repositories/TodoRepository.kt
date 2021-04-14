@@ -7,4 +7,5 @@ interface TodoRepository {
     fun getAllTodos()  : Collection<Todo>
     fun deleteTodoWithId(id: Int) : Int
     fun editTodo(name: String?,status: Int?,priority: Int?,reminder_time: Int?, id: Int)
+    fun getCountByName(name: String) : Int
 }

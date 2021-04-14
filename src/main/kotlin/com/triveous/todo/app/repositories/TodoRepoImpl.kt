@@ -20,6 +20,7 @@ class TodoRepoImpl(@Autowired private val jdbcTemplate: JdbcTemplate) : TodoRepo
         const val SQL_GET_ALL_TODOS = "SELECT * FROM TRVS_TODO"
         const val SQL_DELETE_TODO_WITH_ID = "DELETE FROM TRVS_TODO WHERE ID = ?"
         const val SQL_UPDATE_TODO = "UPDATE TRVS_TODO SET NAME= ?, REMINDER_TIME= ?,STATUS= ?, PRIORITY = ? WHERE ID= ?"
+        const val SQL_COUNT_BY_NAME = "SELECT COUNT(*) FROM TRVS_TODO WHERE NAME= ?"
     }
 
     override fun createTodo(name: String, reminder_time: Int, status: Int, priority: Int) {
@@ -53,6 +54,10 @@ class TodoRepoImpl(@Autowired private val jdbcTemplate: JdbcTemplate) : TodoRepo
         } catch (e: Exception){
           throw  EtAuthException("COULD NOT UPDATE DUE TO ${e.message}")
         }
+    }
+
+    override fun getCountByName(name: String): Int {
+        return jdbcTemplate.queryForObject(SQL_COUNT_BY_NAME,arrayOf<Any>(name), Int::class.java)
     }
 
     private val todoRowMapper: RowMapper<Todo> = RowMapper<Todo> { rs, rowNum ->
