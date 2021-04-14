@@ -1,23 +1,26 @@
 drop database tododb;
-drop user triveous;
-create user triveous with password 'password';
-create database tododb with template=template1 owner=triveous;
+drop user postgres;
+drop table TRVS_TODO;
+create user postgres with password 'password';
+create database tododb with template=template1 owner=postgres;
 \connect tododb;
-alter default privileges grant all on tables to triveous;
-alter default privileges grant all on sequences to triveous;
+alter default privileges grant all on tables to postgres;
+alter default privileges grant all on sequences to postgres;
 
-create table trvs_user(
+create table TRVS_USER(
 user_id integer primary key not null,
 first_name varchar(20) not null,
 last_name varchar(20) not null,
-password text not null
+password text not null,
+email varchar(30) not null
 );
 
-create table trvs_todo(
+create table TRVS_TODO(
   id integer primary key not null,
   name varchar(20) not null,
   reminder_time bigint not null,
-  status integer
+  status integer not null,
+  priority integer not null
 );
 
 create sequence trvs_user_seq increment 1 start 1;
