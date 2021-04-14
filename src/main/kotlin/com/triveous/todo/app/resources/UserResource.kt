@@ -27,5 +27,16 @@ class UserResource(@Autowired private  val service: UserService) {
         return  ResponseEntity(map, HttpStatus.OK)
     }
 
+    @PostMapping("/login")
+    fun loginUser(@RequestBody userMap: Map<String?, Any?>):ResponseEntity<Map<String,String>> {
+        val email = userMap["email"] as String
+        val password = userMap["password"] as String?
+        val user: User? = service.validateUser(email, password)
+        val map: MutableMap<String, String> = HashMap()
+        map.put("message","LoggedIn Successfully")
+        return  ResponseEntity(map,HttpStatus.OK)
+
+    }
+
 
 }
