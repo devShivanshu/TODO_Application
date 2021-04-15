@@ -1,7 +1,6 @@
 package com.triveous.todo.app
 
 //import com.triveous.todo.app.filters.JWTRequestFilter
-import com.triveous.todo.app.Util.JwtUtil
 import com.triveous.todo.app.filters.JWTRequestFilter
 import com.triveous.todo.app.services.MyUserDetailService
 import org.springframework.beans.factory.annotation.Autowired

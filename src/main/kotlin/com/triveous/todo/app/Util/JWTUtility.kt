@@ -20,6 +20,11 @@ class JWTUtility {
         return extractClaim(token) { obj: Claims -> obj.expiration }
     }
 
+    fun extractUserId(token: String?): Int {
+        val claims = extractAllClaims(token)
+        return claims["userId"] as Int
+    }
+
     fun <T> extractClaim(token: String?, claimsResolver: Function<Claims, T>): T {
         val claims = extractAllClaims(token)
         val t =  claimsResolver.apply(claims)

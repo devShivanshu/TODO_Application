@@ -21,7 +21,8 @@ create table TRVS_TODO(
   name varchar(20) not null,
   reminder_time bigint not null,
   status integer not null,
-  priority integer not null
+  priority integer not null,
+  user_id integer not null
 );
 
 create sequence trvs_user_seq increment 1 start 1;

@@ -1,13 +1,8 @@
 package com.triveous.todo.app.filters
 
 import com.triveous.todo.app.Util.JWTUtility
-import com.triveous.todo.app.Util.JwtUtil
 import com.triveous.todo.app.services.MyUserDetailService
-import io.jsonwebtoken.Claims
-import io.jsonwebtoken.Jwts
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.context.annotation.Bean
-import org.springframework.http.HttpStatus
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.core.userdetails.UserDetails
@@ -17,7 +12,6 @@ import org.springframework.web.filter.OncePerRequestFilter
 import javax.servlet.FilterChain
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
-import com.triveous.todo.app.Constants
 
 
 @Component
