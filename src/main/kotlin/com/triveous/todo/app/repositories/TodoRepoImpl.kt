@@ -17,10 +17,14 @@ class TodoRepoImpl(@Autowired private val jdbcTemplate: JdbcTemplate) : TodoRepo
 
     companion object {
         const val SQL_CREATE = "INSERT INTO TRVS_TODO(ID,NAME,REMINDER_TIME,STATUS,PRIORITY) values (NEXTVAL('TRVS_TODO_SEQ'),?,?,?,?)"
-        const val SQL_GET_ALL_TODOS = "SELECT * FROM TRVS_TODO"
+        const val SQL_GET_ALL_TODOS = "SELECT * FROM TRVS_TODO ORDER BY PRIORITY"
         const val SQL_DELETE_TODO_WITH_ID = "DELETE FROM TRVS_TODO WHERE ID = ?"
         const val SQL_UPDATE_TODO = "UPDATE TRVS_TODO SET NAME= ?, REMINDER_TIME= ?,STATUS= ?, PRIORITY = ? WHERE ID= ?"
         const val SQL_COUNT_BY_NAME = "SELECT COUNT(*) FROM TRVS_TODO WHERE NAME= ?"
+        const val SQL_GET_COMPLETED_TODOS = "SELECT * FROM TRVS_TODO WHERE STATUS = 1"
+        const val SQL_GET_INCOMPLETE_TODOS = "SELECT * FROM TRVS_TODO WHERE STATUS = 0"
+        const val SQL_UPDATE_STATUS = "UPDATE TRVS_TODO SET STATUS = ? WHERE ID = ?"
+        const val SQL_UPDATE_PRIORITY = "UPDATE TRVS_TODO SET PRIORITY = ? WHERE ID = ?"
     }
 
     override fun createTodo(name: String, reminder_time: Int, status: Int, priority: Int) {
@@ -41,23 +45,47 @@ class TodoRepoImpl(@Autowired private val jdbcTemplate: JdbcTemplate) : TodoRepo
     }
 
     override fun getAllTodos(): Collection<Todo> {
-       return jdbcTemplate.query(SQL_GET_ALL_TODOS,todoRowMapper)
+        return jdbcTemplate.query(SQL_GET_ALL_TODOS, todoRowMapper)
     }
 
-    override fun deleteTodoWithId(id: Int): Int{
+    override fun deleteTodoWithId(id: Int): Int {
         return jdbcTemplate.update(SQL_DELETE_TODO_WITH_ID, id)
     }
 
-    override fun editTodo(name: String?, status: Int?, priority: Int?, reminder_time: Int?,id: Int) {
-        try{
-            jdbcTemplate.update(SQL_UPDATE_TODO, name,reminder_time ,status,priority,id)
-        } catch (e: Exception){
-          throw  EtAuthException("COULD NOT UPDATE DUE TO ${e.message}")
+    override fun editTodo(name: String?, status: Int?, priority: Int?, reminder_time: Int?, id: Int) {
+        try {
+            jdbcTemplate.update(SQL_UPDATE_TODO, name, reminder_time, status, priority, id)
+        } catch (e: Exception) {
+            throw  EtAuthException("COULD NOT UPDATE DUE TO ${e.message}")
         }
     }
 
     override fun getCountByName(name: String): Int {
-        return jdbcTemplate.queryForObject(SQL_COUNT_BY_NAME,arrayOf<Any>(name), Int::class.java)
+        return jdbcTemplate.queryForObject(SQL_COUNT_BY_NAME, arrayOf<Any>(name), Int::class.java)
+    }
+
+    override fun getAllCompletedTodos(): Collection<Todo> {
+        return jdbcTemplate.query(SQL_GET_COMPLETED_TODOS, todoRowMapper)
+    }
+
+    override fun getIncompleteTodos(): Collection<Todo> {
+        return jdbcTemplate.query(SQL_GET_INCOMPLETE_TODOS, todoRowMapper)
+    }
+
+    override fun updateStatus(status: Int?, id: Int) {
+        try {
+            jdbcTemplate.update(SQL_UPDATE_STATUS, status, id)
+        } catch (e: java.lang.Exception) {
+            throw  EtAuthException("Could Not update due to ${e.message}")
+        }
+    }
+
+    override fun updatePriority(priority: Int?, id: Int) {
+        try {
+            jdbcTemplate.update(SQL_UPDATE_PRIORITY, priority, id)
+        } catch (e: java.lang.Exception) {
+            throw  EtAuthException("Could Not update due to ${e.message}")
+        }
     }
 
     private val todoRowMapper: RowMapper<Todo> = RowMapper<Todo> { rs, rowNum ->
@@ -67,6 +95,4 @@ class TodoRepoImpl(@Autowired private val jdbcTemplate: JdbcTemplate) : TodoRepo
                 rs.getInt("STATUS"),
                 rs.getInt("PRIORITY"))
     }
-
-
 }
