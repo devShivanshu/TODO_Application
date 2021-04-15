@@ -12,7 +12,8 @@ user_id integer primary key not null,
 first_name varchar(20) not null,
 last_name varchar(20) not null,
 password text not null,
-email varchar(30) not null
+email varchar(30) not null,
+username varchar(20) not null
 );
 
 create table TRVS_TODO(

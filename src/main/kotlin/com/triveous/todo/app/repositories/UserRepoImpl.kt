@@ -15,16 +15,18 @@ import java.sql.Statement
 class UserRepoImpl(@Autowired private val jdbcTemplate: JdbcTemplate) : UserRepository {
 
     companion object {
-        const val SQL_CREATE = "INSERT INTO TRVS_USER(USER_ID,FIRST_NAME,LAST_NAME,EMAIL,PASSWORD) values(NEXTVAL('TRVS_USER_SEQ'),?,?,?,?)";
+        const val SQL_CREATE = "INSERT INTO TRVS_USER(USER_ID,FIRST_NAME,LAST_NAME,EMAIL,PASSWORD,USERNAME) values(NEXTVAL('TRVS_USER_SEQ'),?,?,?,?,?)";
         const val SQL_COUNT_BY_EMAIL = "SELECT COUNT(*) FROM TRVS_USER WHERE EMAIL = ?";
-        const val SQLFIND_BY_ID = "SELECT USER_ID, FIRST_NAME, LAST_NAME, EMAIL, PASSWORD " + "FROM TRVS_USER WHERE USER_ID =?"
-        private const val SQL_FIND_BY_EMAIL = "SELECT USER_ID, FIRST_NAME, LAST_NAME, EMAIL, PASSWORD " +
+        const val SQLFIND_BY_ID = "SELECT USER_ID, FIRST_NAME, LAST_NAME, EMAIL, PASSWORD, USERNAME " + "FROM TRVS_USER WHERE USER_ID =?"
+        private const val SQL_FIND_BY_EMAIL = "SELECT USER_ID, FIRST_NAME, LAST_NAME, EMAIL, PASSWORD, USERNAME " +
                 "FROM TRVS_USER WHERE EMAIL = ?"
-
+        private const val SQL_FIND_BY_FIRST_NAME = "SELECT USER_ID, FIRST_NAME, LAST_NAME, EMAIL, PASSWORD , USERNAME " +
+                "FROM TRVS_USER WHERE FIRST_NAME = ?"
+        private const val SQL_FIND_USER_BY_NAME = "SELECT * FROM TRVS_USER WHERE USERNAME= ? LIMIT 1"
     }
 
 
-    override fun create(firstName: String, lastName: String, email: String, password: String): Int {
+    override fun create(firstName: String, lastName: String, email: String, password: String, username: String): Int {
         val keyHolder: KeyHolder = GeneratedKeyHolder()
         try {
             jdbcTemplate.update({
@@ -33,6 +35,7 @@ class UserRepoImpl(@Autowired private val jdbcTemplate: JdbcTemplate) : UserRepo
                 ps.setString(2, lastName)
                 ps.setString(3, email)
                 ps.setString(4, password)
+                ps.setString(5,username)
                 return@update ps
             }, keyHolder)
 
@@ -62,11 +65,28 @@ class UserRepoImpl(@Autowired private val jdbcTemplate: JdbcTemplate) : UserRepo
         return jdbcTemplate.queryForObject(SQLFIND_BY_ID, arrayOf<Any>(userId), userRowMapper);
     }
 
+    override fun findUserByName(name: String) : User? {
+        return jdbcTemplate.queryForObject(SQL_FIND_USER_BY_NAME, arrayOf<Any>(name),userRowMapper)
+    }
+
+    override fun findByFirstNameAndPassword(firstName: String, password: String): User? {
+        try{
+            val user = jdbcTemplate.queryForObject(SQL_FIND_BY_FIRST_NAME, arrayOf<Any>(firstName), userRowMapper)
+            if(!password.equals(user?.password))
+                throw EtAuthException("Invalid Email/Password ")
+            return user
+        } catch (e: Exception){
+            throw EtAuthException("INVALID email/password ${e.message}")
+        }
+    }
+
     private val userRowMapper: RowMapper<User> = RowMapper<User> { rs, rowNum ->
         User(rs.getInt("USER_ID"),
                 rs.getString("FIRST_NAME"),
                 rs.getString("LAST_NAME"),
                 rs.getString("EMAIL"),
-                rs.getString("PASSWORD"))
+                rs.getString("PASSWORD"),
+                rs.getString("USERNAME")
+                )
     }
 }

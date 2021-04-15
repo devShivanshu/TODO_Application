@@ -13,11 +13,13 @@ import javax.servlet.http.HttpServletRequest
 class TodoResource(@Autowired private val service: TodoService) {
 
     @PostMapping("/add")
-    public fun addTodo(@RequestBody todoMap: Map<String, Any>): ResponseEntity<Map<String, String>> {
+    public fun addTodo(@RequestBody todoMap: Map<String, Any>,httpServletRequest: HttpServletRequest): ResponseEntity<Map<String, String>> {
         val name = todoMap["name"] as String
         val reminderTime = todoMap["reminder_time"] as Int
         val status = todoMap["status"] as Int
         val priority = todoMap["priority"] as Int
+
+        print("HTTP SERVLET REQUEST ${httpServletRequest.getHeader("Authorization")}")
 
         service.addTodo(name = name, reminder_time = reminderTime, status = status, priority = priority)
         val map: MutableMap<String, String> = HashMap()
@@ -26,7 +28,7 @@ class TodoResource(@Autowired private val service: TodoService) {
     }
 
     @GetMapping("/getTodos")
-    public fun getAllTodos(request: HttpServletRequest): Collection<Todo> {
+    public fun getAllTodos(): Collection<Todo> {
         return service.getAllTodos()
     }
 
