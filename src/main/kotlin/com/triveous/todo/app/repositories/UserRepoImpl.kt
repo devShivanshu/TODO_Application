@@ -17,6 +17,7 @@ class UserRepoImpl(@Autowired private val jdbcTemplate: JdbcTemplate) : UserRepo
     companion object {
         const val SQL_CREATE = "INSERT INTO TRVS_USER(USER_ID,FIRST_NAME,LAST_NAME,EMAIL,PASSWORD,USERNAME) values(NEXTVAL('TRVS_USER_SEQ'),?,?,?,?,?)";
         const val SQL_COUNT_BY_EMAIL = "SELECT COUNT(*) FROM TRVS_USER WHERE EMAIL = ?";
+        const val SQL_COUNT_BY_USERNAME = "SELECT COUNT(*) FROM TRVS_USER WHERE USERNAME = ?"
         const val SQLFIND_BY_ID = "SELECT USER_ID, FIRST_NAME, LAST_NAME, EMAIL, PASSWORD, USERNAME " + "FROM TRVS_USER WHERE USER_ID =?"
         private const val SQL_FIND_BY_EMAIL = "SELECT USER_ID, FIRST_NAME, LAST_NAME, EMAIL, PASSWORD, USERNAME " +
                 "FROM TRVS_USER WHERE EMAIL = ?"
@@ -78,6 +79,10 @@ class UserRepoImpl(@Autowired private val jdbcTemplate: JdbcTemplate) : UserRepo
         } catch (e: Exception){
             throw EtAuthException("INVALID email/password ${e.message}")
         }
+    }
+
+    override fun getCountByUsername(username: String): Int {
+        return  jdbcTemplate.queryForObject(SQL_COUNT_BY_USERNAME, arrayOf<Any>(username), Int::class.java)
     }
 
     private val userRowMapper: RowMapper<User> = RowMapper<User> { rs, rowNum ->

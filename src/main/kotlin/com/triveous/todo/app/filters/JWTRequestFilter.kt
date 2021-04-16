@@ -45,8 +45,6 @@ class JWTRequestFilter(@Autowired private val userDetailService: MyUserDetailSer
                     SecurityContextHolder.getContext().authentication = usernamePasswordAuthenticationToken
                 }
             }
-
-
         }
        filterChain.doFilter(request, response)
     }

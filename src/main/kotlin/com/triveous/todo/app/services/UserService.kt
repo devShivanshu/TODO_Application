@@ -18,6 +18,8 @@ class UserService(private val repository: UserRepository)  {
     if (!pattern.matcher(email).matches()) throw EtAuthException("Invalid email format")
     val count: Int = repository.getCountByEmail(email)
     if (count > 0) throw EtAuthException("Email already in use")
+    val usernameCount : Int = repository.getCountByUsername(username)
+    if(usernameCount > 0) throw EtAuthException("Username already taken, try some other username")
     val userId: Int = repository.create(firstName, lastName, email, password,username)
     return repository.findById(userId)
   }

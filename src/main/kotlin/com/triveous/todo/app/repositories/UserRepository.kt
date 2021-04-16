@@ -10,5 +10,6 @@ interface UserRepository {
     fun findById(userId: Int): User?
     fun findUserByName(name:String) : User?
     fun findByFirstNameAndPassword(firstName: String,password: String): User?
+    fun getCountByUsername(username: String) : Int
 
 }
