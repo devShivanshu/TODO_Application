@@ -21,7 +21,7 @@ class UserRepoImpl(@Autowired private val jdbcTemplate: JdbcTemplate) : UserRepo
         private const val SQL_FIND_BY_EMAIL = "SELECT USER_ID, FIRST_NAME, LAST_NAME, EMAIL, PASSWORD, USERNAME " +
                 "FROM TRVS_USER WHERE EMAIL = ?"
         private const val SQL_FIND_BY_FIRST_NAME = "SELECT USER_ID, FIRST_NAME, LAST_NAME, EMAIL, PASSWORD , USERNAME " +
-                "FROM TRVS_USER WHERE FIRST_NAME = ?"
+                "FROM TRVS_USER WHERE USERNAME = ?"
         private const val SQL_FIND_USER_BY_NAME = "SELECT * FROM TRVS_USER WHERE USERNAME= ? LIMIT 1"
     }
 
