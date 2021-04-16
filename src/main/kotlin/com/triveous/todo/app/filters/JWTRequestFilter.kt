@@ -27,13 +27,26 @@ class JWTRequestFilter(@Autowired private val userDetailService: MyUserDetailSer
             username = jwtUtility.extractUsername(token)
         }
         if(SecurityContextHolder.getContext().authentication == null){
-            val userDetails : UserDetails = this.userDetailService.loadUserByUsername(username)
-            if (jwtUtility.validateToken(token, userDetails)!!) {
-                val usernamePasswordAuthenticationToken = UsernamePasswordAuthenticationToken(
-                        userDetails, null, userDetails.authorities)
-                usernamePasswordAuthenticationToken.details = WebAuthenticationDetailsSource().buildDetails(request)
-                SecurityContextHolder.getContext().authentication = usernamePasswordAuthenticationToken
+            print("REQUEST URL  ${request.requestURL}")
+            if(request.requestURL.contains("login") || request.requestURL.contains("register")){
+//                var requestBody = request.reader.lines().collect(Collectors.joining())
+//                requestBody = """$requestBody""".trimIndent()
+//                val gson = Gson()
+//                var user = gson.fromJson(requestBody,RequestUser::class.java)
+//                print("USERNAME = ${user.username}")
             }
+            else {
+                val userDetails : UserDetails = this.userDetailService.loadUserByUsername(username)
+
+                if (jwtUtility.validateToken(token, userDetails)!!) {
+                    val usernamePasswordAuthenticationToken = UsernamePasswordAuthenticationToken(
+                            userDetails, null, userDetails.authorities)
+                    usernamePasswordAuthenticationToken.details = WebAuthenticationDetailsSource().buildDetails(request)
+                    SecurityContextHolder.getContext().authentication = usernamePasswordAuthenticationToken
+                }
+            }
+
+
         }
        filterChain.doFilter(request, response)
     }
